@@ -1,0 +1,109 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+' SumuBot code created by Krista, Owen, Taylor and Colin for
+' CSE 490o. This code and bot is designed to teach some basic
+' (and BASIC, haha, get it?) coding to students.
+
+' -----[ I/O Definitions ]-------------------------------------------------
+
+LMotor PIN 13 ' left servo motor
+RMotor PIN 12 ' right servo motor
+
+LLinePwr PIN 10 ' left line sensor power
+LLineIn PIN 9 ' left line sensor input
+RLinePwr PIN 7 ' right line sensor power
+RLineIn PIN 8 ' right line sensor input
+
+LfIrOut PIN 4 ' left IR LED output
+LfIrIn PIN 11 ' left IR sensor input
+RtIrOut PIN 15 ' right IR LED output
+RtIrIn PIN 14 ' right IR sensor input
+
+Speaker PIN 1 ' piezo speaker
+StartLED PIN 0 ' display start delay
+
+' -----[ Constants ]-------------------------------------------------------
+
+LFwdFast CON 1000 ' left motor fwd; fast
+LFwdSlow CON 800 ' left motor fwd; slow
+LStop CON 750 ' left motor stop
+LRevSlow CON 700 ' left motor rev; slow
+LRevFast CON 500 ' left motor rev; fast
+
+RFwdFast CON 500 ' right motor fwd; fast
+RFwdSlow CON 700 ' right motor fwd; slow
+RStop CON 750 ' right motor stop
+RRevSlow CON 800 ' right motor rev; slow
+RRevFast CON 1000 ' right motor rev; fast
+
+' -----[ Variables ]-------------------------------------------------------
+
+lLine VAR Word ' left sensor raw reading
+rLine VAR Word ' right sensor raw reading
+blackThresh VAR Word ' QTI black threshold
+lineBits VAR Nib ' decoded sensors value
+lbLeft VAR lineBits.BIT1
+lbRight VAR lineBits.BIT0
+
+irBits VAR Nib ' IR readings (l & r)
+irLeft VAR irBits.BIT1
+irRight VAR irBits.BIT0
+lastIr VAR Nib ' info from last reading
+
+pulses VAR Byte ' counter for motor control
+temp VAR Byte
+
+' -----[ EEPROM Data ]-----------------------------------------------------
+
+RunStatus DATA $00 ' run status
+
+' -----[ Initialization ]--------------------------------------------------
+
+Reset:
+ READ RunStatus, temp ' read current status
+ temp = ~temp ' invert status
+ WRITE RunStatus, temp ' save for next reset
+ IF (temp > 0) THEN END ' okay to run?
+
+' Sets black threshold to 1/4 the average of the two sensor readings.
+' SumoBot must be placed over black playing surface before this code runs.
+
+Set_Threshold: ' set QTI black threshold
+ blackThresh = (lLine / 10) + (rLine / 10)
+
+ LOW LMotor ' make more pins outputs
+ LOW RMotor
+
+Start_Delay: ' five second delay
+ GOSUB Main
+
+' Rotate the Bot 90 degrees right in place (hopefully?)
+SpinRight:
+ FOR pulses = 1 TO 17
+  PULSOUT LMotor, LFwdFast
+  PULSOUT RMotor, RRevFast
+  PAUSE 20
+ NEXT
+ RETURN
+
+'  Rotate the Bot 90 degrees left in place (hopefully?)
+SpinLeft:
+ FOR pulses = 1 TO 18
+  PULSOUT RMotor, RFwdFast
+  PULSOUT LMotor, LRevFast
+  PAUSE 20
+ NEXT
+ RETURN
+
+' I'm Owen and I'm dumb because I don't grade
+Main:
+ GOSUB SpinRight
+ GOSUB SpinRight
+ GOSUB SpinRight
+ GOSUB SpinRight
+ PAUSE 1000
+ GOSUB SpinLeft
+ GOSUB SpinLeft
+ GOSUB SpinLeft
+ GOSUB SpinLeft
+ END
