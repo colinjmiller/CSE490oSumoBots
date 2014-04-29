@@ -95,15 +95,71 @@ SpinLeft:
  NEXT
  RETURN
 
-' I'm Owen and I'm dumb because I don't grade
-Main:
- GOSUB SpinRight
- GOSUB SpinRight
- GOSUB SpinRight
- GOSUB SpinRight
+GoForward:
  PAUSE 1000
- GOSUB SpinLeft
- GOSUB SpinLeft
- GOSUB SpinLeft
- GOSUB SpinLeft
+ FOR pulses = 1 TO 40
+  PULSOUT RMotor, RFwdSlow
+  PULSOUT LMotor, LFwdSlow
+  PAUSE 20
+ NEXT
+ RETURN
+
+GoBackward:
+ PAUSE 1000
+ FOR pulses = 1 TO 40
+  PULSOUT RMotor, RRevSlow
+  PULSOUT LMotor, LRevSlow
+  PAUSE 20
+ NEXT
+ RETURN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+' Call a function by using GOSUB <name>
+' Your options are:
+' - GoForward
+' - GoBackward
+' - SpinRight
+' - SpinLeft
+
+' Do you wanna be a hacker?
+Main:
+ GOSUB GoForward
+ GOSUB GoForward
+ GOSUB GoForward
+ GOSUB SpinRight
+ GOSUB GoForward
  END
